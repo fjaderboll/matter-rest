@@ -18,5 +18,4 @@ and this app will interact with the server over the websocket.
 - `app/`: Main application source code.
 - `docs/`: Documentation files.
 - `docker/`: Dockerfile, Docker compose and such.
-- `tests/`: Unit and integration tests.
 - `requirements.txt`: Python dependencies.

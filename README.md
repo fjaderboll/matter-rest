@@ -29,7 +29,7 @@ Start REST API:
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-export MATTER_SERVER_WS_URL="ws://172.16.1.5:5580"
+export MATTER_SERVER_WS_URL="ws://localhost:5580/ws"
 uvicorn app.main:app --reload --port 8000
 ```
 Visit http://localhost:8000/docs for the interactive OpenAPI UI.

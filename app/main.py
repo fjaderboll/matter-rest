@@ -1,11 +1,16 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.routes import bridge, devices, health
 from app.core.config import get_settings
-from app.services.matter_client import MatterClient
+from app.services.matter_client import (
+    MatterClient,
+    MatterClientConnectionError,
+    MatterClientError,
+)
 
 
 @asynccontextmanager
@@ -21,6 +26,16 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title=settings.app_name, lifespan=lifespan)
+
+    @app.exception_handler(MatterClientConnectionError)
+    async def matter_connection_error_handler(
+        request: Request, exc: MatterClientConnectionError
+    ) -> JSONResponse:
+        return JSONResponse(status_code=502, content={"detail": "Cannot connect to Matter server"})
+
+    @app.exception_handler(MatterClientError)
+    async def matter_client_error_handler(request: Request, exc: MatterClientError) -> JSONResponse:
+        return JSONResponse(status_code=400, content={"detail": str(exc)})
 
     app.add_middleware(
         CORSMiddleware,

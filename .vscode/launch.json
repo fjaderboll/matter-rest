@@ -1,0 +1,39 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Matter Server",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "docker run -it --rm --name matter-server --security-opt apparmor=unconfined -p 5580:5580 -v matter-server-data:/data ghcr.io/matter-js/python-matter-server:stable"
+    },
+    {
+      "name": "Matter API",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "app.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload"
+      ],
+      "env": {
+        "MATTER_SERVER_WS_URL": "ws://localhost:5580"
+      },
+      "jinja": false,
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Run both",
+      "configurations": [
+        "Matter Server",
+        "Matter API"
+      ]
+    }
+  ]
+}

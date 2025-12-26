@@ -1,40 +1,105 @@
 import asyncio
 import json
 import time
+import logging
 from typing import Any, Dict, Optional
 
 import websockets
+from websockets.exceptions import (
+    ConnectionClosedError,
+    InvalidHandshake,
+    InvalidURI,
+    WebSocketException,
+)
+
+# Use uvicorn's error logger so messages appear with the server logs.
+logger = logging.getLogger("uvicorn.error")
 
 
 class MatterClientError(Exception):
     """Raised when the Matter server reports an error."""
 
 
+class MatterClientConnectionError(Exception):
+    """Raised when the Matter client cannot establish a websocket connection."""
+
+
 class MatterClient:
-    def __init__(self, websocket_url: str, timeout: int = 15):
+    def __init__(self, websocket_url: str, timeout: int = 60):
         self.websocket_url = websocket_url
         self.timeout = timeout
+        self.id = 0
+        self._ws: websockets.WebSocketClientProtocol | None = None
+        self._send_lock = asyncio.Lock()
+        self._connect_lock = asyncio.Lock()
+        self._ready = False
+    
+    def _next_id(self) -> int:
+        self.id = self.id + 1 if self.id < 2**31 - 1 else 1
+        return self.id
+
+    async def _ensure_connection(self) -> websockets.WebSocketClientProtocol:
+        if self._ws and not self._ws.closed and self._ready:
+            return self._ws
+
+        async with self._connect_lock:
+            if self._ws and not self._ws.closed and self._ready:
+                return self._ws
+
+            try:
+                ws = await websockets.connect(self.websocket_url)
+                # The server sends a greeting/status message immediately; read and discard it.
+                raw = await asyncio.wait_for(ws.recv(), timeout=self.timeout)
+                logger.info("Matter server greeting: %s", raw)
+            except (OSError, InvalidURI, InvalidHandshake, WebSocketException) as exc:
+                await self._reset_connection()
+                raise MatterClientConnectionError("Cannot connect to Matter server") from exc
+            except asyncio.TimeoutError as exc:
+                await self._reset_connection()
+                raise TimeoutError("Matter server did not send greeting in time") from exc
+
+            self._ws = ws
+            self._ready = True
+            return self._ws
+
+    async def _reset_connection(self) -> None:
+        if self._ws and not self._ws.closed:
+            try:
+                await self._ws.close()
+            except Exception:
+                pass
+        self._ws = None
+        self._ready = False
 
     async def _rpc(self, command: str, args: Dict[str, Any] | None = None) -> Any:
         payload = {
-            "message_id": str(int(time.time() * 1000)),
+            "message_id": str(self._next_id()),
             "command": command,
         }
         if args:
             payload["args"] = args
 
-        # Open a short-lived connection for each call to keep things simple.
-        async with websockets.connect(self.websocket_url) as ws:
-            await ws.send(json.dumps(payload))
-            try:
-                raw = await asyncio.wait_for(ws.recv(), timeout=self.timeout)
-            except asyncio.TimeoutError as exc:
-                raise TimeoutError(f"Matter server timed out waiting for {command}") from exc
+        ws = await self._ensure_connection()
+
+        try:
+            async with self._send_lock:
+                data = json.dumps(payload)
+                await ws.send(data)
+                try:
+                    raw = await asyncio.wait_for(ws.recv(), timeout=self.timeout)
+                except asyncio.TimeoutError as exc:
+                    raise TimeoutError(
+                        f"Matter server timed out waiting for {command}"
+                    ) from exc
+        except (ConnectionClosedError, WebSocketException) as exc:
+            await self._reset_connection()
+            raise MatterClientConnectionError("Cannot connect to Matter server") from exc
 
         response = json.loads(raw)
-        if error := response.get("error"):
-            raise MatterClientError(str(error))
-        return response.get("result", response.get("message", response))
+        if response.get("error_code"):
+            raise MatterClientError(str(response.get("details", response.get("error_code"))))
+        
+        return response
 
     async def set_wifi_credentials(self, ssid: str, credentials: str) -> Any:
         return await self._rpc(
