@@ -12,10 +12,6 @@ from websockets.exceptions import (
     WebSocketException,
 )
 
-# Use uvicorn's error logger so messages appear with the server logs.
-logger = logging.getLogger("uvicorn.error")
-
-
 class MatterClientError(Exception):
     """Raised when the Matter server reports an error."""
 
@@ -50,7 +46,7 @@ class MatterClient:
                 ws = await websockets.connect(self.websocket_url)
                 # The server sends a greeting/status message immediately; read and discard it.
                 raw = await asyncio.wait_for(ws.recv(), timeout=self.timeout)
-                logger.info("Matter server greeting: %s", raw)
+                logging.info("Matter server greeting: %s", raw)
             except (OSError, InvalidURI, InvalidHandshake, WebSocketException) as exc:
                 await self._reset_connection()
                 raise MatterClientConnectionError("Cannot connect to Matter server") from exc
@@ -99,7 +95,7 @@ class MatterClient:
         if response.get("error_code"):
             raise MatterClientError(str(response.get("details", response.get("error_code"))))
         
-        return response
+        return response.get("result", response)
 
     async def set_wifi_credentials(self, ssid: str, credentials: str) -> Any:
         return await self._rpc(
@@ -110,7 +106,7 @@ class MatterClient:
     async def set_thread_dataset(self, dataset: str) -> Any:
         return await self._rpc("set_thread_dataset", {"dataset": dataset})
 
-    async def commission_with_code(self, code: str, network_only: Optional[bool] = None) -> Any:
+    async def commission_node(self, code: str, network_only: Optional[bool] = None) -> Any:
         args: Dict[str, Any] = {"code": code}
         if network_only is not None:
             args["network_only"] = network_only
@@ -142,7 +138,7 @@ class MatterClient:
             {"node_id": node_id, "attribute_path": attribute_path, "value": value},
         )
 
-    async def device_command(
+    async def node_command(
         self,
         node_id: int,
         endpoint_id: int,

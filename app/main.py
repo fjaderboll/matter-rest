@@ -1,10 +1,11 @@
 from contextlib import asynccontextmanager
+import logging
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.routes import bridge, devices, health
+from app.routes import bridge, health, nodes
 from app.core.config import get_settings
 from app.services.matter_client import (
     MatterClient,
@@ -27,6 +28,10 @@ def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
+    logging.basicConfig(level=logging.DEBUG,
+                    format="%(asctime)s | %(levelname)-8s | "
+                           "%(module)s:%(funcName)s:%(lineno)d - %(message)s")
+
     @app.exception_handler(MatterClientConnectionError)
     async def matter_connection_error_handler(
         request: Request, exc: MatterClientConnectionError
@@ -47,7 +52,7 @@ def create_app() -> FastAPI:
 
     app.include_router(health.router)
     app.include_router(bridge.router)
-    app.include_router(devices.router)
+    app.include_router(nodes.router)
 
     return app
 

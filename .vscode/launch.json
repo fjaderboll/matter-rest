@@ -5,7 +5,7 @@
       "name": "Matter Server",
       "type": "node-terminal",
       "request": "launch",
-      "command": "docker run -it --rm --name matter-server --security-opt apparmor=unconfined -p 5580:5580 -v matter-server-data:/data ghcr.io/matter-js/python-matter-server:stable"
+      "command": "docker run -it --rm --name matter-server --security-opt apparmor=unconfined -p 5580:5580 -v matter-server-data:/data --network=host ghcr.io/matter-js/python-matter-server:stable"
     },
     {
       "name": "Matter API",

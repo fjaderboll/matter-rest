@@ -23,19 +23,19 @@ class CommissioningWindowRequest(BaseModel):
     node_id: int = Field(..., description="Existing node id to open window for")
 
 
-class DeviceSummary(BaseModel):
+class NodeSummary(BaseModel):
     node_id: int = Field(..., description="Node identifier")
     label: Optional[str] = Field(None, description="Human friendly name")
     online: Optional[bool] = Field(None, description="Whether the node is reachable")
 
 
-class DeviceDetail(DeviceSummary):
+class NodeDetail(NodeSummary):
     vendor: Optional[str] = None
     product: Optional[str] = None
     endpoints: Optional[list[Dict[str, Any]]] = None
 
 
-class DeviceCommandRequest(BaseModel):
+class NodeCommandRequest(BaseModel):
     endpoint_id: int = Field(..., description="Endpoint id for the command")
     cluster_id: int = Field(..., description="Cluster id (numerical)")
     command_name: str = Field(..., description="Command name as defined by the cluster")
