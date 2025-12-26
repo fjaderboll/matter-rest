@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  matter-server:
+    image: ghcr.io/matter-js/python-matter-server:stable
+    container_name: matter-server
+    restart: unless-stopped
+    ports:
+      - "5580:5580"  # WebSocket interface
+    volumes:
+      - matter-data:/data
+
+  api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: matter-rest-api
+    environment:
+      - MATTER_SERVER_WS_URL=ws://matter-server:5580
+    ports:
+      - "8000:8000"
+    depends_on:
+      - matter-server
+    restart: unless-stopped
+
+volumes:
+  matter-data:

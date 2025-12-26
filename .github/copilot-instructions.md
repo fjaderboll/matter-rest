@@ -9,11 +9,14 @@ and act as a controller for your Matter devices.
 ## Technical Stack
 - Primary Language: Python
 - Web Framework: FastAPI
-- Matter SDK: Open Home Foundation Matter Server
+
+## Setup
+The Docker image `ghcr.io/matter-js/python-matter-server` will run the Matter server, 
+and this app will interact with the server over the websocket.
 
 ## Repository Structure
 - `app/`: Main application source code.
 - `docs/`: Documentation files.
-- `docker/`: Dockerfile and related build things.
+- `docker/`: Dockerfile, Docker compose and such.
 - `tests/`: Unit and integration tests.
 - `requirements.txt`: Python dependencies.
