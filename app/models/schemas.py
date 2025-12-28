@@ -25,14 +25,15 @@ class CommissioningWindowRequest(BaseModel):
 
 class NodeSummary(BaseModel):
     node_id: int = Field(..., description="Node identifier")
-    label: Optional[str] = Field(None, description="Human friendly name")
-    online: Optional[bool] = Field(None, description="Whether the node is reachable")
+    available: bool = Field(None, description="Online or not")
+    is_bridge: bool = Field(None, description="Whether the node is a bridge")
 
 
 class NodeDetail(NodeSummary):
-    vendor: Optional[str] = None
-    product: Optional[str] = None
-    endpoints: Optional[list[Dict[str, Any]]] = None
+    date_commissioned: str = None
+    last_interview: str = None
+    interview_version: int = None
+    attributes: Dict[str, Any] = None
 
 
 class NodeCommandRequest(BaseModel):

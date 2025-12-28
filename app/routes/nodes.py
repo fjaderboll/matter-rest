@@ -23,11 +23,12 @@ async def commission_node(
 @router.get("/", response_model=list[NodeSummary])
 async def list_nodes(client: MatterClient = Depends(get_matter_client)):
     nodes = await client.get_nodes()
+    #logging.debug(json.dumps(nodes, indent=4))
     return [
         NodeSummary(
             node_id=int(node.get("node_id")),
-            label=node.get("label") or node.get("name"),
-            online=node.get("online"),
+            available=node.get("available"),
+            is_bridge=node.get("is_bridge"),
         )
         for node in nodes
         if node.get("node_id") is not None
@@ -39,14 +40,15 @@ async def node_details(node_id: int, client: MatterClient = Depends(get_matter_c
     node = await client.get_node(node_id)
     if not node:
         raise HTTPException(status_code=404, detail="Node not found")
-    #logging.debug(json.dumps(node, indent=4))
+    logging.debug(json.dumps(node, indent=4))
     return NodeDetail(
         node_id=int(node.get("node_id")),
-        label=node.get("label") or node.get("name"),
-        online=node.get("online"),
-        vendor=node.get("vendor"),
-        product=node.get("product"),
-        endpoints=node.get("endpoints"),
+        available=node.get("available"),
+        is_bridge=node.get("is_bridge"),
+        date_commissioned=node.get("date_commissioned"),
+        last_interview=node.get("last_interview"),
+        interview_version=node.get("interview_version"),
+        attributes=node.get("attributes")
     )
 
 
