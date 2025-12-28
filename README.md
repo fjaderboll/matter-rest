@@ -1,6 +1,6 @@
 # Matter REST API
 
-FastAPI-based REST facade for the [Matter Python Server](https://github.com/matter-js/python-matter-server), providing simple HTTP endpoints to connect to a Matter bridge, discover devices, and interact with them.
+A REST API facade for the [Open Home Foundation Matter Server](https://github.com/matter-js/python-matter-server), providing simple HTTP endpoints to interact with your Matter devices.
 
 ## Features
 - Connect to an existing Matter bridge via WebSocket

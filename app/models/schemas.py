@@ -43,6 +43,14 @@ class NodeCommandRequest(BaseModel):
     payload: Dict[str, Any] = Field(default_factory=dict, description="Command payload")
 
 
+class ControllerCommandRequest(BaseModel):
+    command: str = Field(..., description="Raw Matter command name")
+    args: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Optional command arguments",
+    )
+
+
 class AttributeReadRequest(BaseModel):
     attribute_path: str = Field(..., description="Path formatted as endpoint/cluster/attribute (e.g. 1/6/0)")
 

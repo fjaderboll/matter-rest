@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from app.deps import get_matter_client
 from app.models.schemas import (
     CommissioningWindowRequest,
+    ControllerCommandRequest,
     ThreadDataset,
     WifiCredentials,
 )
@@ -35,3 +36,12 @@ async def open_commissioning_window(
 @router.post("/listen")
 async def start_listening(client: MatterClient = Depends(get_matter_client)):
     return await client.start_listening()
+
+
+@router.post("/command")
+async def send_custom_command(
+    payload: ControllerCommandRequest,
+    client: MatterClient = Depends(get_matter_client),
+):
+    result = await client.custom_command(command=payload.command, args=payload.args)
+    return result

@@ -1,7 +1,7 @@
 # Setup of IKEA Dirigera hub
 
 ## Commission node
-In the app *Home smart", enter your *home*, select integrations -> Matter bridge -> create Matter bridge
+In IKEA's app *Home smart", enter your *home*, select integrations -> Matter bridge -> create Matter bridge
 -> get QR-kod and use that code below. (the code will stay the same even if you redo previous steps).
 
 ```shell

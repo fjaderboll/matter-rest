@@ -170,3 +170,6 @@ class MatterClient:
                 "payload": payload or {},
             },
         )
+
+    async def custom_command(self, command: str, args: Dict[str, Any] | None = None) -> Any:
+        return await self._rpc(command, args or {})
