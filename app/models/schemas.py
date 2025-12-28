@@ -19,10 +19,6 @@ class CommissionRequest(BaseModel):
     )
 
 
-class CommissioningWindowRequest(BaseModel):
-    node_id: int = Field(..., description="Existing node id to open window for")
-
-
 class NodeSummary(BaseModel):
     node_id: int = Field(..., description="Node identifier")
     available: bool = Field(None, description="Online or not")

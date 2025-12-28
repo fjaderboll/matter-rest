@@ -126,9 +126,6 @@ class MatterClient:
             args["network_only"] = network_only
         return await self._rpc("commission_with_code", args)
 
-    async def open_commissioning_window(self, node_id: int) -> Any:
-        return await self._rpc("open_commissioning_window", {"node_id": node_id})
-
     async def get_nodes(self) -> list[Dict[str, Any]]:
         result = await self._rpc("get_nodes")
         return result if isinstance(result, list) else []
@@ -136,9 +133,6 @@ class MatterClient:
     async def get_node(self, node_id: int) -> Optional[Dict[str, Any]]:
         result = await self._rpc("get_node", {"node_id": node_id})
         return result if isinstance(result, dict) else None
-
-    async def start_listening(self) -> Any:
-        return await self._rpc("start_listening")
 
     async def server_info(self) -> Any:
         return await self._rpc("server_info")

@@ -1,12 +1,7 @@
 from fastapi import APIRouter, Depends, Response, status
 
 from app.deps import get_matter_client
-from app.models.schemas import (
-    CommissioningWindowRequest,
-    ControllerCommandRequest,
-    ThreadDataset,
-    WifiCredentials,
-)
+from app.models.schemas import ControllerCommandRequest, ThreadDataset, WifiCredentials
 from app.services.matter_client import MatterClient
 
 router = APIRouter(prefix="/controller", tags=["controller"])
@@ -31,18 +26,6 @@ async def set_thread_credentials(
 ):
     await client.set_thread_dataset(payload.dataset)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-
-@router.post("/commissioning-window")
-async def open_commissioning_window(
-    payload: CommissioningWindowRequest, client: MatterClient = Depends(get_matter_client)
-):
-    return await client.open_commissioning_window(payload.node_id)
-
-
-@router.post("/listen")
-async def start_listening(client: MatterClient = Depends(get_matter_client)):
-    return await client.start_listening()
 
 
 @router.post("/command")
