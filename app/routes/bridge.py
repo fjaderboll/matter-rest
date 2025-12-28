@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.routes.deps import get_matter_client
+from app.deps import get_matter_client
 from app.models.schemas import (
     CommissioningWindowRequest,
     ThreadDataset,

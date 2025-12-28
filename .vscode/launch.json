@@ -8,7 +8,7 @@
       "command": "docker run -it --rm --name matter-server --security-opt apparmor=unconfined -p 5580:5580 -v matter-server-data:/data --network=host ghcr.io/matter-js/python-matter-server:stable"
     },
     {
-      "name": "Matter API",
+      "name": "Matter REST",
       "type": "python",
       "request": "launch",
       "module": "uvicorn",

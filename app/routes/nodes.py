@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 import logging
 import json
-from app.routes.deps import get_matter_client
+from app.deps import get_matter_client
 from app.models.schemas import (
     AttributeReadRequest,
     AttributeWriteRequest,
