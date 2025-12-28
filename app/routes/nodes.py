@@ -52,7 +52,7 @@ async def node_details(node_id: int, client: MatterClient = Depends(get_matter_c
     )
 
 
-@router.post("/{node_id}/commands")
+@router.post("/{node_id}/command")
 async def send_command(
     node_id: int,
     payload: NodeCommandRequest,
@@ -65,7 +65,7 @@ async def send_command(
         command_name=payload.command_name,
         payload=payload.payload,
     )
-    return {"result": result}
+    return result
 
 
 @router.post("/{node_id}/attributes/read")
@@ -75,7 +75,7 @@ async def read_attribute(
     client: MatterClient = Depends(get_matter_client),
 ):
     result = await client.read_attribute(node_id=node_id, attribute_path=payload.attribute_path)
-    return {"result": result}
+    return result
 
 
 @router.post("/{node_id}/attributes/write")
@@ -89,4 +89,4 @@ async def write_attribute(
         attribute_path=payload.attribute_path,
         value=payload.value,
     )
-    return {"result": result}
+    return result
