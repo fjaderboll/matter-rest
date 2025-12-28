@@ -8,7 +8,7 @@ from app.models.schemas import (
 )
 from app.services.matter_client import MatterClient
 
-router = APIRouter(prefix="/bridge", tags=["bridge"])
+router = APIRouter(prefix="/controller", tags=["controller"])
 
 
 @router.post("/wifi-credentials")

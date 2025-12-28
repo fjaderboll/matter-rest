@@ -23,7 +23,7 @@ async def commission_node(
 @router.get("/", response_model=list[NodeSummary])
 async def list_nodes(client: MatterClient = Depends(get_matter_client)):
     nodes = await client.get_nodes()
-    #logging.debug(json.dumps(nodes, indent=4))
+    
     return [
         NodeSummary(
             node_id=int(node.get("node_id")),
@@ -40,7 +40,7 @@ async def node_details(node_id: int, client: MatterClient = Depends(get_matter_c
     node = await client.get_node(node_id)
     if not node:
         raise HTTPException(status_code=404, detail="Node not found")
-    logging.debug(json.dumps(node, indent=4))
+    
     return NodeDetail(
         node_id=int(node.get("node_id")),
         available=node.get("available"),

@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.routes import bridge, health, nodes
+from app.routes import controller, health, nodes
 from app.core.config import get_settings
 from app.services.matter_client import (
     MatterClient,
@@ -49,7 +49,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health.router)
-    app.include_router(bridge.router)
+    app.include_router(controller.router)
     app.include_router(nodes.router)
 
     return app
