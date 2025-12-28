@@ -111,14 +111,14 @@ class MatterClient:
         
         return response.get("result", response)
 
-    async def set_wifi_credentials(self, ssid: str, credentials: str) -> Any:
+    async def set_wifi_credentials(self, ssid: str, credentials: str):
         await self._rpc(
             "set_wifi_credentials",
             {"ssid": ssid, "credentials": credentials},
         )
 
-    async def set_thread_dataset(self, dataset: str) -> Any:
-        return await self._rpc("set_thread_dataset", {"dataset": dataset})
+    async def set_thread_dataset(self, dataset: str):
+        await self._rpc("set_thread_dataset", {"dataset": dataset})
 
     async def commission_node(self, code: str, network_only: Optional[bool] = None) -> Any:
         args: Dict[str, Any] = {"code": code}
