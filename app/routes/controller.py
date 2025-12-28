@@ -12,11 +12,16 @@ from app.services.matter_client import MatterClient
 router = APIRouter(prefix="/controller", tags=["controller"])
 
 
+@router.get("/")
+async def get_controller_info(client: MatterClient = Depends(get_matter_client)):
+    return await client.server_info()
+
+
 @router.post("/wifi-credentials")
 async def set_wifi_credentials(
     payload: WifiCredentials, client: MatterClient = Depends(get_matter_client)
 ):
-    return await client.set_wifi_credentials(payload.ssid, payload.credentials)
+    await client.set_wifi_credentials(payload.ssid, payload.credentials)
 
 
 @router.post("/thread-dataset")

@@ -112,7 +112,7 @@ class MatterClient:
         return response.get("result", response)
 
     async def set_wifi_credentials(self, ssid: str, credentials: str) -> Any:
-        return await self._rpc(
+        await self._rpc(
             "set_wifi_credentials",
             {"ssid": ssid, "credentials": credentials},
         )
@@ -139,6 +139,9 @@ class MatterClient:
 
     async def start_listening(self) -> Any:
         return await self._rpc("start_listening")
+
+    async def server_info(self) -> Any:
+        return await self._rpc("server_info")
 
     async def read_attribute(self, node_id: int, attribute_path: str) -> Any:
         return await self._rpc(
