@@ -33,10 +33,8 @@ def create_app() -> FastAPI:
                            "%(module)s:%(funcName)s:%(lineno)d - %(message)s")
 
     @app.exception_handler(MatterClientConnectionError)
-    async def matter_connection_error_handler(
-        request: Request, exc: MatterClientConnectionError
-    ) -> JSONResponse:
-        return JSONResponse(status_code=502, content={"detail": "Cannot connect to Matter server"})
+    async def matter_connection_error_handler(request: Request, exc: MatterClientConnectionError) -> JSONResponse:
+        return JSONResponse(status_code=502, content={"detail": str(exc)})
 
     @app.exception_handler(MatterClientError)
     async def matter_client_error_handler(request: Request, exc: MatterClientError) -> JSONResponse:

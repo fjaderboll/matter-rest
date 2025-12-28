@@ -67,6 +67,20 @@ class MatterClient:
         self._ws = None
         self._ready = False
 
+    async def check_connection(self) -> bool:
+        """Ensure the websocket is alive by sending a ping."""
+        try:
+            ws = await self._ensure_connection()
+            pong = await ws.ping()
+            await asyncio.wait_for(pong, timeout=self.timeout)
+            return True
+        except asyncio.TimeoutError as exc:
+            await self._reset_connection()
+            raise MatterClientConnectionError("Cannot connect to Matter server") from exc
+        except (ConnectionClosedError, WebSocketException, OSError) as exc:
+            await self._reset_connection()
+            raise MatterClientConnectionError("Cannot connect to Matter server") from exc
+
     async def _rpc(self, command: str, args: Dict[str, Any] | None = None) -> Any:
         payload = {
             "message_id": str(self._next_id()),

@@ -1,10 +1,31 @@
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 
 from app.core.config import get_settings, Settings
+from app.deps import get_matter_client
+from app.services.matter_client import MatterClient
 
 router = APIRouter(tags=["health"])
 
 
 @router.get("/health")
-async def health(settings: Settings = Depends(get_settings)):
-    return {"status": "ok", "app": settings.app_name}
+async def health(
+    settings: Settings = Depends(get_settings),
+    client: MatterClient = Depends(get_matter_client),
+):
+    status = {
+        "status": "ok",
+        "app": settings.app_name
+    }
+    try:
+        await client.check_connection()
+        return status
+    except Exception as exc:
+        # Return a 5xx so upstreams can treat it as unhealthy, but keep response body shape stable.
+        status['status'] = "error"
+        status['detail'] = str(exc)
+        
+        return JSONResponse(
+            status_code=503,
+            content=status,
+        )
