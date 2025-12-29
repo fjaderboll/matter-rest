@@ -12,7 +12,7 @@ async def get_controller_info(client: MatterClient = Depends(get_matter_client))
     return await client.server_info()
 
 
-@router.post("/wifi-credentials", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/wifi-credentials", status_code=status.HTTP_204_NO_CONTENT)
 async def set_wifi_credentials(
     payload: WifiCredentials, client: MatterClient = Depends(get_matter_client)
 ):
@@ -20,7 +20,7 @@ async def set_wifi_credentials(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.post("/thread-credentials", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/thread-credentials", status_code=status.HTTP_204_NO_CONTENT)
 async def set_thread_credentials(
     payload: ThreadDataset, client: MatterClient = Depends(get_matter_client)
 ):

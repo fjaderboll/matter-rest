@@ -48,9 +48,7 @@ class NodeInfo(NodeSummary):
     endpoints: dict[int, EndpointInfo] = Field(default_factory=dict, description="Endpoints associated with the node")
 
 
-class NodeCommandRequest(BaseModel):
-    endpoint_id: int = Field(..., description="Endpoint id for the command")
-    cluster_id: int = Field(..., description="Cluster id (numerical)")
+class ClusterCommandRequest(BaseModel):
     command_name: str = Field(..., description="Command name as defined by the cluster")
     payload: Dict[str, Any] = Field(default_factory=dict, description="Command payload")
 

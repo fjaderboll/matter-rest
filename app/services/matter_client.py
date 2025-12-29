@@ -148,7 +148,7 @@ class MatterClient:
             {"node_id": node_id, "attribute_path": attribute_path, "value": value},
         )
 
-    async def node_command(
+    async def device_command(
         self,
         node_id: int,
         endpoint_id: int,

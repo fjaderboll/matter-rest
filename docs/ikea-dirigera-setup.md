@@ -27,8 +27,8 @@ curl -s -X PUT http://localhost:8000/nodes/4/endpoints/10/clusters/6/attributes/
 ## Turn light on/off
 ```shell
 # send On command
-curl -s -X POST http://localhost:8000/nodes/4/command  -H "Content-Type: application/json" -d '{ "endpoint_id": 10, "cluster_id": 6, "command_name": "On" }'
+curl -s -X POST http://localhost:8000/nodes/4/endpoints/10/clusters/6/command  -H "Content-Type: application/json" -d '{ "command_name": "On" }'
 
 # send Off command
-curl -s -X POST http://localhost:8000/nodes/4/command  -H "Content-Type: application/json" -d '{ "endpoint_id": 10, "cluster_id": 6, "command_name": "Off" }'
+curl -s -X POST http://localhost:8000/nodes/4/endpoints/10/clusters/6/command  -H "Content-Type: application/json" -d '{ "command_name": "Off" }'
 ```

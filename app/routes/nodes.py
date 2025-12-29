@@ -6,7 +6,7 @@ from app.models.schemas import (
     AttributeWriteRequest,
     CommissionRequest,
     AttributeInfo,
-    NodeCommandRequest,
+    ClusterCommandRequest,
     NodeInfo,
     NodeSummary,
 )
@@ -93,16 +93,18 @@ async def write_attribute(
     
     raise HTTPException(status_code=500, detail=f"Failed to write attribute: {status}")
 
-@router.post("/{node_id}/command")
-async def send_command(
+@router.post("/{node_id}/endpoints/{endpoint_id}/clusters/{cluster_id}/command")
+async def send_cluster_command(
     node_id: int,
-    payload: NodeCommandRequest,
+    endpoint_id: int,
+    cluster_id: int,
+    payload: ClusterCommandRequest,
     client: MatterClient = Depends(get_matter_client),
 ):
-    result = await client.node_command(
+    result = await client.device_command(
         node_id=node_id,
-        endpoint_id=payload.endpoint_id,
-        cluster_id=payload.cluster_id,
+        endpoint_id=endpoint_id,
+        cluster_id=cluster_id,
         command_name=payload.command_name,
         payload=payload.payload,
     )
