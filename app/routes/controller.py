@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Response, status
 
 from app.deps import get_matter_client
-from app.models.schemas import ControllerCommandRequest, ThreadDataset, WifiCredentials
+from app.models.schemas import CommandArgsRequest, ThreadDataset, WifiCredentials
 from app.services.matter_client import MatterClient
 
 router = APIRouter(prefix="/controller", tags=["controller"])
@@ -28,10 +28,11 @@ async def set_thread_credentials(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.post("/command")
+@router.post("/command/{command}")
 async def send_custom_command(
-    payload: ControllerCommandRequest,
+    command: str,
+    payload: CommandArgsRequest | None = None,
     client: MatterClient = Depends(get_matter_client),
 ):
-    result = await client.custom_command(command=payload.command, args=payload.args)
+    result = await client.custom_command(command=command, args=payload.args if payload else None)
     return result

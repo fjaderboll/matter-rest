@@ -4,9 +4,10 @@ import json
 from app.deps import get_matter_client
 from app.models.schemas import (
     AttributeWriteRequest,
+    CommandArgsRequest,
     CommissionRequest,
     AttributeInfo,
-    ClusterCommandRequest,
+    CommandArgsRequest,
     NodeInfo,
     NodeSummary,
 )
@@ -93,19 +94,20 @@ async def write_attribute(
     
     raise HTTPException(status_code=500, detail=f"Failed to write attribute: {status}")
 
-@router.post("/{node_id}/endpoints/{endpoint_id}/clusters/{cluster_id}/command")
-async def send_cluster_command(
+@router.post("/{node_id}/endpoints/{endpoint_id}/clusters/{cluster_id}/command/{command}")
+async def send_custom_device_command(
     node_id: int,
     endpoint_id: int,
     cluster_id: int,
-    payload: ClusterCommandRequest,
+    command: str,
+    payload: CommandArgsRequest | None = None,
     client: MatterClient = Depends(get_matter_client),
 ):
     result = await client.device_command(
         node_id=node_id,
         endpoint_id=endpoint_id,
         cluster_id=cluster_id,
-        command_name=payload.command_name,
-        payload=payload.payload,
+        command_name=command,
+        payload=payload.args if payload else None
     )
     return result

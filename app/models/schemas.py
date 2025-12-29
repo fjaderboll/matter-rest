@@ -48,17 +48,8 @@ class NodeInfo(NodeSummary):
     endpoints: dict[int, EndpointInfo] = Field(default_factory=dict, description="Endpoints associated with the node")
 
 
-class ClusterCommandRequest(BaseModel):
-    command_name: str = Field(..., description="Command name as defined by the cluster")
-    payload: Dict[str, Any] = Field(default_factory=dict, description="Command payload")
-
-
-class ControllerCommandRequest(BaseModel):
-    command: str = Field(..., description="Raw Matter command name")
-    args: Optional[Dict[str, Any]] = Field(
-        default=None,
-        description="Optional command arguments",
-    )
+class CommandArgsRequest(BaseModel):
+    args: Optional[Dict[str, Any]] = Field(default=None, description="Optional command arguments")
 
 
 class AttributeWriteRequest(BaseModel):
