@@ -15,13 +15,13 @@ curl -s http://localhost:8000/nodes/ | jq
 curl -s http://localhost:8000/nodes/4 | jq
 ```
 
-## Read/write value
+## Read/write attribute value
 ```shell
 # read OnTime
-curl -s -X POST http://localhost:8000/nodes/4/attributes/read  -H "Content-Type: application/json" -d '{ "attribute_path": "10/6/16385" }' | jq
+curl -s http://localhost:8000/nodes/4/endpoints/10/clusters/6/attributes/16385 | jq
 
 # set OnTime = 5 minutes
-curl -s -X POST http://localhost:8000/nodes/4/attributes/write  -H "Content-Type: application/json" -d '{ "attribute_path": "10/6/16385", "value": 5 }' | jq
+curl -s -X PUT http://localhost:8000/nodes/4/endpoints/10/clusters/6/attributes/16385 -H "Content-Type: application/json" -d '{ "value": 5 }' | jq
 ```
 
 ## Turn light on/off
