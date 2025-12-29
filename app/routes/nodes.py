@@ -3,16 +3,24 @@ import logging
 import json
 from app.deps import get_matter_client
 from app.models.schemas import (
-    AttributeReadRequest,
     AttributeWriteRequest,
     CommissionRequest,
+    AttributeInfo,
     NodeCommandRequest,
-    NodeDetail,
+    NodeInfo,
     NodeSummary,
 )
 from app.services.matter_client import MatterClient
+from app.services.transform import create_attribute_info, create_attribute_path, map_attributes_to_objects
 
 router = APIRouter(prefix="/nodes", tags=["nodes"])
+
+
+async def _get_node_or_404(node_id: int, client: MatterClient) -> dict:
+    node = await client.get_node(node_id)
+    if not node:
+        raise HTTPException(status_code=404, detail="Node not found")
+    return node
 
 @router.post("/")
 async def commission_node(
@@ -35,22 +43,55 @@ async def list_nodes(client: MatterClient = Depends(get_matter_client)):
     ]
 
 
-@router.get("/{node_id}", response_model=NodeDetail)
-async def node_details(node_id: int, client: MatterClient = Depends(get_matter_client)):
-    node = await client.get_node(node_id)
-    if not node:
-        raise HTTPException(status_code=404, detail="Node not found")
+@router.get("/{node_id}", response_model=NodeInfo)
+async def node_details(node_id: int, client: MatterClient = Depends(get_matter_client)) -> NodeInfo:
+    node = await _get_node_or_404(node_id, client)
     
-    return NodeDetail(
+    return NodeInfo(
         node_id=int(node.get("node_id")),
         available=node.get("available"),
         is_bridge=node.get("is_bridge"),
         date_commissioned=node.get("date_commissioned"),
         last_interview=node.get("last_interview"),
         interview_version=node.get("interview_version"),
-        attributes=node.get("attributes")
+        endpoints=map_attributes_to_objects(node),
     )
 
+
+@router.get(
+    "/{node_id}/endpoints/{endpoint_id}/clusters/{cluster_id}/attributes/{attribute_id}",
+    response_model=AttributeInfo,
+)
+async def read_attribute(
+    node_id: int,
+    endpoint_id: int,
+    cluster_id: int,
+    attribute_id: int,
+    client: MatterClient = Depends(get_matter_client),
+):
+    attribute_path = create_attribute_path(endpoint_id, cluster_id, attribute_id)
+    result = await client.read_attribute(node_id=node_id, attribute_path=attribute_path)
+    return create_attribute_info(endpoint_id, cluster_id, attribute_id, result[attribute_path])
+
+@router.put(
+    "/{node_id}/endpoints/{endpoint_id}/clusters/{cluster_id}/attributes/{attribute_id}",
+    response_model=AttributeInfo,
+)
+async def write_attribute(
+    node_id: int,
+    endpoint_id: int,
+    cluster_id: int,
+    attribute_id: int,
+    payload: AttributeWriteRequest,
+    client: MatterClient = Depends(get_matter_client),
+):
+    attribute_path = create_attribute_path(endpoint_id, cluster_id, attribute_id)
+    result = await client.write_attribute(node_id=node_id, attribute_path=attribute_path, value=payload.value)
+    status = result[0]['Status'] if len(result) == 1 and 'Status' in result[0] else -1
+    if status == 0:
+        return await read_attribute(node_id, endpoint_id, cluster_id, attribute_id, client)
+    
+    raise HTTPException(status_code=500, detail=f"Failed to write attribute: {status}")
 
 @router.post("/{node_id}/command")
 async def send_command(
@@ -64,29 +105,5 @@ async def send_command(
         cluster_id=payload.cluster_id,
         command_name=payload.command_name,
         payload=payload.payload,
-    )
-    return result
-
-
-@router.post("/{node_id}/attributes/read")
-async def read_attribute(
-    node_id: int,
-    payload: AttributeReadRequest,
-    client: MatterClient = Depends(get_matter_client),
-):
-    result = await client.read_attribute(node_id=node_id, attribute_path=payload.attribute_path)
-    return result
-
-
-@router.post("/{node_id}/attributes/write")
-async def write_attribute(
-    node_id: int,
-    payload: AttributeWriteRequest,
-    client: MatterClient = Depends(get_matter_client),
-):
-    result = await client.write_attribute(
-        node_id=node_id,
-        attribute_path=payload.attribute_path,
-        value=payload.value,
     )
     return result

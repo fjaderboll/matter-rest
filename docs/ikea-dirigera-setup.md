@@ -20,7 +20,7 @@ curl -s http://localhost:8000/nodes/4 | jq
 # read OnTime
 curl -s -X POST http://localhost:8000/nodes/4/attributes/read  -H "Content-Type: application/json" -d '{ "attribute_path": "10/6/16385" }' | jq
 
-# set OnTime = 5 minnutes
+# set OnTime = 5 minutes
 curl -s -X POST http://localhost:8000/nodes/4/attributes/write  -H "Content-Type: application/json" -d '{ "attribute_path": "10/6/16385", "value": 5 }' | jq
 ```
 
