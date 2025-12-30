@@ -32,7 +32,7 @@
       "name": "Run both",
       "configurations": [
         "Matter Server",
-        "Matter API"
+        "Matter REST"
       ]
     }
   ]
