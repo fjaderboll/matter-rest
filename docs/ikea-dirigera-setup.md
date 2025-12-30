@@ -1,5 +1,8 @@
 # Setup of IKEA Dirigera hub
-Below are examples how to setup and control your lights.
+Below is tested on a IKEA Dirigera hub, but has likely a lot in common
+with other solutions.
+
+Examples are given with `curl` and responses formatted with `jq`.
 
 ## Commission node
 In IKEA's app *Home smart", enter your *home*, select integrations -> Matter bridge -> create Matter bridge
