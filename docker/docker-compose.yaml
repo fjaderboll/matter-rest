@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  matter-server:
+    image: ghcr.io/matter-js/python-matter-server:stable
+    volumes:
+      - matter-server-data:/data
+
+  matter-rest:
+    image: ghcr.io/fjaderboll/matter-rest:latest
+    environment:
+      - MATTER_SERVER_WS_URL=ws://matter-server:5580/ws
+    ports:
+      - "8000:80"
+    depends_on:
+      - matter-server
+
+volumes:
+  matter-server-data:

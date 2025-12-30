@@ -23,7 +23,16 @@ and [command examples](docs/raw-commands-examples.md).
 
 ## Quick start
 ```shell
-TODO
+# start
+docker stack deploy -c docker/docker-compose.yaml mr
+# test
+curl http://localhost:8000/health
+
+# debug
+docker service ls
+docker service logs -f mr_matter-rest
+# stop
+docker stack rm mr
 ```
 
 ## Development
