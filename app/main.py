@@ -18,7 +18,7 @@ from app.services.matter_client import (
 async def lifespan(app: FastAPI):
     settings = get_settings()
     app.state.matter_client = MatterClient(
-        websocket_url=str(settings.matter_server_ws_url),
+        websocket_url=str(settings.server_ws_url),
         timeout=settings.request_timeout,
     )
     yield

@@ -3,8 +3,7 @@
 ## Prerequisites
 - Python 3.11+
 
-## Quickstart (local)
-Start Matter server:
+## Start Matter server
 ```shell
 docker run -d \
   --name matter-server \
@@ -15,7 +14,7 @@ docker run -d \
   ghcr.io/matter-js/python-matter-server:stable
 ```
 
-Start REST API:
+## Start REST API
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
@@ -28,3 +27,15 @@ curl http://localhost:8000/health
 ```
 
 Visit http://localhost:8000/docs for Swagger documentation.
+
+## Docker build
+```shell
+docker build -t matter-rest -f docker/Dockerfile .
+docker run -d \
+  --name matter-rest \
+  --restart=unless-stopped \
+  -p 8000:80 \
+  -e "MATTER_SERVER_WS_URL=ws://192.168.1.3:5580/ws" \
+  matter-rest
+curl http://localhost:8000/health
+```

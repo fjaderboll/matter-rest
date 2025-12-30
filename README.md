@@ -19,9 +19,9 @@ curl -s -X POST http://localhost:8000/nodes/4/endpoints/10/clusters/6/command/To
 ```
 
 See more examples in [IKEA Dirigera setup](docs/ikea-dirigera-setup.md)
-and [command examples](docs/raw-commands-examples.md)
+and [command examples](docs/raw-commands-examples.md).
 
-## Quick setup
+## Quick start
 ```shell
 TODO
 ```

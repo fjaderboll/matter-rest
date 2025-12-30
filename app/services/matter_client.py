@@ -48,7 +48,7 @@ class MatterClient:
                 logging.info("Matter server greeting: %s", raw)
             except (OSError, InvalidURI, InvalidHandshake, WebSocketException) as exc:
                 await self._reset_connection()
-                raise MatterClientConnectionError("Cannot connect to Matter server") from exc
+                raise MatterClientConnectionError("Cannot connect to Matter server: " + self.websocket_url) from exc
             except asyncio.TimeoutError as exc:
                 await self._reset_connection()
                 raise TimeoutError("Matter server did not send greeting in time") from exc
