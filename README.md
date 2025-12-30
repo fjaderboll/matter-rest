@@ -9,13 +9,13 @@ the server directly.
 ## Examples
 ```shell
 # list nodes
-curl -s http://localhost:8000/nodes/ | jq
+curl http://localhost:8000/nodes/
 # get node details
-curl -s http://localhost:8000/nodes/4 | jq
+curl http://localhost:8000/nodes/4
 # read attribute
-curl -s http://localhost:8000/nodes/4/endpoints/10/clusters/6/attributes/16385 | jq
+curl http://localhost:8000/nodes/4/endpoints/10/clusters/6/attributes/16385
 # toggle light
-curl -s -X POST http://localhost:8000/nodes/4/endpoints/10/clusters/6/command/Toggle
+curl -X POST http://localhost:8000/nodes/4/endpoints/10/clusters/6/command/Toggle
 ```
 
 See more examples in [IKEA Dirigera setup](docs/ikea-dirigera-setup.md)
@@ -27,7 +27,6 @@ and [command examples](docs/raw-commands-examples.md).
 docker stack deploy -c docker/docker-compose.yaml mr
 # test
 curl http://localhost:8000/health
-
 # debug
 docker service ls
 docker service logs -f mr_matter-rest
@@ -35,5 +34,12 @@ docker service logs -f mr_matter-rest
 docker stack rm mr
 ```
 
+Visit [http://localhost:8000/docs](http://localhost:8000/docs) to see the Swagger documentation.
+
 ## Development
 See details in [development.md](docs/development.md)
+
+## TODO
+Next upcoming planned features:
+* Figure out how dimming lights works (`MoveToLevel`)
+* Include `name` in attributes for easier readability (eg id `16385` -> name `OnTime`)
