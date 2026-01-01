@@ -1,9 +1,10 @@
 # Development
-
-## Prerequisites
-- Python 3.11+
+If you're using *Visual Studio Code*, you can preferable use
+the launch configurations to start it up.
 
 ## Start Matter server
+This is self-sustained, and only needs to be running in the background.
+
 ```shell
 docker run -d \
   --name matter-server \
@@ -29,13 +30,10 @@ curl http://localhost:8000/health
 Visit http://localhost:8000/docs for Swagger documentation.
 
 ## Docker build
+Build and run a local image `matter-rest`.
+
 ```shell
-docker build -t matter-rest -f docker/Dockerfile .
-docker run -d \
-  --name matter-rest \
-  --restart=unless-stopped \
-  -p 8000:80 \
-  -e "MATTER_SERVER_WS_URL=ws://192.168.1.3:5580/ws" \
-  matter-rest
+./docker/build.sh
+./docker/run.sh
 curl http://localhost:8000/health
 ```

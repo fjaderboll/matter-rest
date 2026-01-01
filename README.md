@@ -39,7 +39,7 @@ docker run -d \
   ghcr.io/matter-js/python-matter-server:stable
 ```
 
-## Start Matter REST
+### Start Matter REST
 ```shell
 docker run -d \
   --name matter-rest \
