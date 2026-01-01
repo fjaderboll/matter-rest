@@ -18,13 +18,12 @@ async def health(
         "app": settings.app_name
     }
     try:
-        await client.check_connection()
+        await client.health_check()
         return status
     except Exception as exc:
-        # Return a 5xx so upstreams can treat it as unhealthy, but keep response body shape stable.
         status['status'] = "error"
         status['detail'] = str(exc)
-        
+
         return JSONResponse(
             status_code=503,
             content=status,

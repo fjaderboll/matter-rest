@@ -32,53 +32,54 @@ class MatterClient:
     def _next_id(self) -> int:
         self.id = self.id + 1 if self.id < 2**31 - 1 else 1
         return self.id
+    
+    async def health_check(self) -> bool:
+        await self._ensure_connection()
 
     async def _ensure_connection(self) -> websockets.WebSocketClientProtocol:
-        if self._ws and not self._ws.closed and self._ready:
+        if await self.is_connected():
             return self._ws
 
         async with self._connect_lock:
-            if self._ws and not self._ws.closed and self._ready:
+            if await self.is_connected():
                 return self._ws
 
             try:
+                self._reset_connection()
                 ws = await websockets.connect(self.websocket_url)
                 # The server sends a greeting/status message immediately; read and discard it.
                 raw = await asyncio.wait_for(ws.recv(), timeout=self.timeout)
                 logging.info("Matter server greeting: %s", raw)
             except (OSError, InvalidURI, InvalidHandshake, WebSocketException) as exc:
-                await self._reset_connection()
+                self._reset_connection()
                 raise MatterClientConnectionError("Cannot connect to Matter server: " + self.websocket_url) from exc
             except asyncio.TimeoutError as exc:
-                await self._reset_connection()
+                self._reset_connection()
                 raise TimeoutError("Matter server did not send greeting in time") from exc
 
             self._ws = ws
             self._ready = True
             return self._ws
 
-    async def _reset_connection(self) -> None:
-        if self._ws and not self._ws.closed:
-            try:
-                await self._ws.close()
-            except Exception:
-                pass
+    async def is_connected(self) -> bool:
+        if self._ready and self._ws:
+            return await self._ping()
+        return False
+
+    def _reset_connection(self) -> None:
         self._ws = None
         self._ready = False
 
-    async def check_connection(self) -> bool:
+    async def _ping(self) -> bool:
         """Ensure the websocket is alive by sending a ping."""
         try:
-            ws = await self._ensure_connection()
-            pong = await ws.ping()
+            pong = await self._ws.ping()
             await asyncio.wait_for(pong, timeout=self.timeout)
             return True
         except asyncio.TimeoutError as exc:
-            await self._reset_connection()
-            raise MatterClientConnectionError("Cannot connect to Matter server") from exc
+            return False
         except (ConnectionClosedError, WebSocketException, OSError) as exc:
-            await self._reset_connection()
-            raise MatterClientConnectionError("Cannot connect to Matter server") from exc
+            return False
 
     async def _rpc(self, command: str, args: Dict[str, Any] | None = None) -> Any:
         payload = {
