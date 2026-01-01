@@ -18,8 +18,7 @@ curl http://localhost:8000/nodes/4/endpoints/10/clusters/6/attributes/16385
 curl -X POST http://localhost:8000/nodes/4/endpoints/10/clusters/6/command/Toggle
 ```
 
-See more examples in [IKEA Dirigera setup](docs/ikea-dirigera-setup.md)
-and [command examples](docs/raw-commands-examples.md).
+See more examples in [examples.md](docs/examples.md).
 
 ## Quick start
 If you've cloned this repo you can simply run:
@@ -59,6 +58,6 @@ Visit [http://localhost:8000/docs](http://localhost:8000/docs) to see the Swagge
 See details in [development.md](docs/development.md)
 
 ## TODO
-Next upcoming planned features:
-* Figure out how dimming lights works (`MoveToLevel`)
+Next upcoming planned stuff:
+* Add more examples in [examples.md](docs/examples.md)
 * Include `name` in attributes for easier readability (eg id `16385` -> name `OnTime`)
