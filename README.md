@@ -22,16 +22,35 @@ See more examples in [IKEA Dirigera setup](docs/ikea-dirigera-setup.md)
 and [command examples](docs/raw-commands-examples.md).
 
 ## Quick start
+If you've cloned this repo you can simply run:
 ```shell
-# start
 docker stack deploy -c docker/docker-compose.yaml mr
+```
+else see below.
+
+### Start Matter server
+```shell
+docker run -d \
+  --name matter-server \
+  --restart=unless-stopped \
+  --security-opt apparmor=unconfined \
+  -v matter-server-data:/data \
+  --network=host \
+  ghcr.io/matter-js/python-matter-server:stable
+```
+
+## Start Matter REST
+```shell
+docker run -d \
+  --name matter-rest \
+  --restart=unless-stopped \
+  -p 8000:80 \
+  --add-host host.docker.internal:host-gateway \
+  -e "MATTER_SERVER_WS_URL=ws://host.docker.internal:5580/ws" \
+  ghcr.io/fjaderboll/matter-rest:latest
+
 # test
 curl http://localhost:8000/health
-# debug
-docker service ls
-docker service logs -f mr_matter-rest
-# stop
-docker stack rm mr
 ```
 
 Visit [http://localhost:8000/docs](http://localhost:8000/docs) to see the Swagger documentation.
