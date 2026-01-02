@@ -5,7 +5,7 @@ Below is tested on a IKEA Dirigera hub, but should hopefully work
 with any matter device.
 
 ## Commission node
-In IKEA's app *Home smart":
+In IKEA's app *Home smart*:
 enter your *home*
 -> select integrations
 -> Matter bridge
@@ -52,7 +52,7 @@ curl -s -X POST http://localhost:8000/nodes/4/endpoints/10/clusters/6/command/To
 # read current level
 curl -s http://localhost:8000/nodes/4/endpoints/14/clusters/8/attributes/0 | jq
 
-# set brightness (0-254)
+# set brightness (level = 0-254, transitionTime in deciseconds)
 curl -s -X POST http://localhost:8000/nodes/4/endpoints/14/clusters/8/command/MoveToLevel -H "Content-Type: application/json" -d '{ "args": { "level": 254, "transitionTime": 0 } }'
 ```
 

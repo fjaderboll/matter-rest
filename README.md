@@ -18,7 +18,7 @@ curl http://localhost:8000/nodes/4/endpoints/10/clusters/6/attributes/16385
 curl -X POST http://localhost:8000/nodes/4/endpoints/10/clusters/6/command/Toggle
 ```
 
-See more examples in [examples.md](docs/examples.md).
+See more details and examples in [examples.md](docs/examples.md).
 
 ## Quick start
 If you've cloned this repo you can simply run:
